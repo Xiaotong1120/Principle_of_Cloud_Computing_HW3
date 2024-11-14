@@ -1,0 +1,27 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package lists and install necessary packages
+RUN apt-get update && \
+    apt-get install -y \
+        software-properties-common \
+        python3 \
+        python3-pip \
+        git && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
+RUN pip3 install --no-cache-dir \
+        kafka-python \
+        couchdb \
+        Pillow \
+        torch \
+        torchvision \
+        numpy \
+        matplotlib
+
+COPY PA3/consumer_script.py /consumer_script.py
+COPY PA3/inference_script.py /inference_script.py
+COPY PA3/producer_script.py /producer_script.py
+COPY PA3/cifar-10-batches-py /cifar-10-batches-py

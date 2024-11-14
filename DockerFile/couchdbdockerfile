@@ -1,0 +1,2 @@
+FROM couchdb
+COPY PA3/DockerFile/local.ini /opt/couchdb/etc/

@@ -1,0 +1,44 @@
+#
+# Author: Aniruddha Gokhale
+# CS4287/5287 Principles of Cloud Computing
+# Created: Fall 2024
+#
+# Purpose: 
+#    This is our Inventory file, where we define some aliases
+#
+# 
+
+# These are the aliases referenced in the master playbook
+
+[LocalMC]
+127.0.0.1  ansible_connection=local
+
+
+[CloudVMs]
+# BEGIN ANSIBLE MANAGED BLOCK FOR CloudVMs
+t13vm1 ansible_host=192.168.5.177
+t13vm2 ansible_host=192.168.5.142
+t13vm3 ansible_host=192.168.5.219
+t13vm4 ansible_host=192.168.5.51
+# END ANSIBLE MANAGED BLOCK FOR CloudVMs
+
+# @@ Your playbook that retrieves IP addresses of the VMs should
+#    insert the 4 private IP addresses one per line here.
+#    If you add manually, then you cannot run the master playbook
+#    in one go.
+# @@
+
+[CloudVMs:vars]
+# @@
+#    Insert the path to your team's pem file on the controller machine for
+#    the ssh_private_key parameter.
+#    Insert the path to your F24_CS4287.pem file on the controller machine for
+#    the ssh_common_args.
+#    Do not forget to remove the <> brackets in both places
+#    Moreover, it is assumed that you have used bastion as the alias
+#    in your ~/.ssh/config file
+# @@
+ansible_user=cc
+ansible_connection=ssh
+ansible_ssh_private_key_file=~/.ssh/cloud2.pem
+ansible_ssh_common_args='-i ~/.ssh/F24_BASTION.pem -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p cc@bastion1"'

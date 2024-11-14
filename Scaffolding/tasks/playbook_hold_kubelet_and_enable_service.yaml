@@ -1,0 +1,13 @@
+---
+# Step 1: Hold the Kubernetes packages
+- name: "Hold Kubernetes packages to prevent automatic updates"
+  ansible.builtin.command: sudo apt-mark hold kubelet kubeadm kubectl
+  become: yes
+
+# Step 2: Enable and start the kubelet service
+- name: "Enable and start kubelet service"
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: yes
+    state: started
+  become: yes

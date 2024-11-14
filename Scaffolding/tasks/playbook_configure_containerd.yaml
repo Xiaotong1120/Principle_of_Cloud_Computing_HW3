@@ -1,0 +1,56 @@
+- name: "Remove existing config.toml if it exists"
+  ansible.builtin.file:
+    path: /etc/containerd/config.toml
+    state: absent
+  become: yes
+
+- name: "Ensure /etc/containerd directory exists"
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: "Generate default containerd config"
+  ansible.builtin.shell: "containerd config default > /tmp/config.toml"
+  become: yes
+
+- name: "Copy generated config to /etc/containerd/"
+  ansible.builtin.copy:
+    src: /tmp/config.toml
+    dest: /etc/containerd/config.toml
+    remote_src: yes
+  become: yes
+
+- name: "Set SystemdCgroup = true in containerd config"
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: '^(\s*SystemdCgroup\s*=\s*)false'
+    replace: '\1true'
+  become: yes
+
+- name: "Set pause image version to 3.10"
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: 'sandbox_image = "registry.k8s.io/pause:.*"'
+    replace: 'sandbox_image = "registry.k8s.io/pause:3.10"'
+  become: yes
+
+- name: "Add private registry to containerd config at the correct position"
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: '(\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\])'
+    replace: '\1\n          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."192.168.5.177:5000"] endpoint = ["http://192.168.5.177:5000"]'
+  become: yes
+
+- name: "Restart containerd"
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+  become: yes
+
+- name: "Restart Docker"
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+  become: yes

@@ -1,0 +1,22 @@
+- name: "Update apt and install Docker"
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: "Ensure Docker is started and enabled at boot"
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
+
+- name: "Add user to Docker group"
+  ansible.builtin.user:
+    name: "{{ cloud_user }}"
+    groups: docker
+    append: yes
+  become: yes

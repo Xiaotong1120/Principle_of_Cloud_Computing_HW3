@@ -1,0 +1,32 @@
+---
+# tasks/playbook_retrieve_facts_vms.yaml
+
+- name: "Retrieve details of all created VMs"
+  openstack.cloud.server_info:
+    cloud: "{{ cloud }}"
+    server: "{{ item }}"
+  loop: "{{ server_names }}"
+  register: vm_info
+
+- name: "Add VMs to inventory with their private IPs"
+  add_host:
+    name: "{{ server.name }}"
+    ansible_host: "{{ server.addresses['CH-822922-net'][0]['addr'] }}"
+    ansible_user: "{{ cloud_user }}"
+  loop: "{{ vm_info.results | map(attribute='servers') | flatten(levels=1) }}"
+  loop_control:
+    loop_var: server
+
+- name: "Prepare dynamic inventory block for [CloudVMs]"
+  set_fact:
+    cloudvms_block: |
+      {% for server in vm_info.results | map(attribute='servers') | flatten(levels=1) %}
+      {{ server.name }} ansible_host={{ server.addresses['CH-822922-net'][0]['addr'] }}
+      {% endfor %}
+
+- name: "Save dynamic inventory to [CloudVMs] section"
+  blockinfile:
+    path: "./inventory_file"
+    block: "{{ cloudvms_block | trim }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK FOR CloudVMs"
+    insertafter: '^\[CloudVMs\]'

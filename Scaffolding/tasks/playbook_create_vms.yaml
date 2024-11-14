@@ -1,0 +1,17 @@
+---
+# tasks/playbook_create_vms.yaml
+
+- name: "Create VM instances on Chameleon"
+  openstack.cloud.server:
+    cloud: "{{ cloud }}"
+    state: present
+    key_name: "{{ key_name }}"
+    name: "{{ item }}"
+    availability_zone: nova
+    image: "{{ image_name }}"
+    flavor: "{{ vm_flavor }}"
+    network: "{{ network }}"
+    security_groups: "{{ security_groups }}"
+    auto_ip: false
+    timeout: 200
+  loop: "{{ server_names }}"

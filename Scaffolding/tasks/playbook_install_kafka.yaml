@@ -1,0 +1,57 @@
+---
+- name: Copy Kafka archive to Cloud VMs
+  copy:
+    src: /tmp/kafka.tgz
+    dest: /home/{{ cloud_user }}/kafka.tgz
+    mode: '0644'
+  become: yes
+
+- name: Add user permission for Kafka files
+  ansible.builtin.shell: sudo chown {{ cloud_user }}:{{ cloud_user }} /home/{{ cloud_user }}/kafka.tgz
+  become: yes
+
+- name: Ensure Kafka directory exists
+  file:
+    path: /home/{{ cloud_user }}/kafka
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Extract Kafka on Cloud VMs
+  unarchive:
+    src: /home/{{ cloud_user }}/kafka.tgz
+    dest: /home/{{ cloud_user }}/kafka
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+  become: yes
+
+- name: Ensure Kafka logs directory exists with correct permissions
+  file:
+    path: /home/{{ cloud_user }}/kafka/logs
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Add user permission for Kafka directory and files
+  ansible.builtin.shell: sudo chown -R {{ cloud_user }}:{{ cloud_user }} /home/{{ cloud_user }}/kafka
+  become: yes
+
+- name: Configure Kafka (set listeners)
+  lineinfile:
+    path: /home/{{ cloud_user }}/kafka/config/server.properties
+    regexp: '^#listeners=PLAINTEXT://:9092'
+    line: 'listeners=PLAINTEXT://0.0.0.0:9092'
+  become: yes
+
+- name: Configure Kafka (set advertised.listeners)
+  lineinfile:
+    path: /home/{{ cloud_user }}/kafka/config/server.properties
+    regexp: '^#advertised.listeners=PLAINTEXT://your.host.name:9092'
+    line: "advertised.listeners=PLAINTEXT://{{ hostvars['t13vm2']['ansible_host'] }}:9092"
+  become: yes
+
+- name: Ensure Kafka is running
+  shell: nohup /home/{{ cloud_user }}/kafka/bin/kafka-server-start.sh /home/{{ cloud_user }}/kafka/config/server.properties > /dev/null 2>&1 &
+  async: 300
+  poll: 0
+  become: yes

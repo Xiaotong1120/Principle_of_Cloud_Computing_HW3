@@ -1,0 +1,9 @@
+---
+- name: "Install pip packages for cloud VMs"
+  ansible.builtin.pip:
+    name:
+      - kafka-python
+      - requests
+    state: present
+  become: yes
+  become_user: root

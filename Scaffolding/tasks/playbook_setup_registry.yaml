@@ -1,0 +1,35 @@
+- name: "Ensure Docker is started and enabled at boot"
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: "Configure Docker to trust the private registry"
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "100m"
+        },
+        "storage-driver": "overlay2",
+        "insecure-registries": ["192.168.5.177:5000"]
+      }
+  become: yes
+
+- name: "Restart Docker to apply insecure registry configuration"
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+
+- name: "Check Docker service status"
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+  register: docker_status
+
+- name: "Display Docker service status"
+  ansible.builtin.debug:
+    var: docker_status

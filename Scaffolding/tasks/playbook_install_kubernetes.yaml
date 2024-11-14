@@ -1,0 +1,66 @@
+---
+# Step 1: Create the directory for GPG keys if it doesn't exist
+- name: Create keyrings directory for GPG keys
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: yes
+
+# Step 2: Check if the Kubernetes GPG key already exists
+- name: Check if Kubernetes GPG key is already present
+  ansible.builtin.stat:
+    path: /tmp/kubernetes.gpg
+  register: gpg_key_check
+
+# Step 3: Download the Kubernetes GPG key only if it doesn't exist
+- name: Download the Kubernetes GPG key
+  ansible.builtin.get_url:
+    url: https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key
+    dest: /tmp/kubernetes.gpg
+  when: not gpg_key_check.stat.exists
+  become: yes
+
+# Step 4: Add the Kubernetes GPG key to the keyrings directory
+- name: Add the Kubernetes GPG key to the keyrings directory
+  ansible.builtin.command: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes.gpg
+  when: not gpg_key_check.stat.exists
+  become: yes
+
+# Step 5: Add the Kubernetes apt repository using lineinfile
+- name: Add Kubernetes apt repository
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/kubernetes.list
+    line: 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /'
+    create: yes
+  become: yes
+
+# Step 6: Verify that the Kubernetes apt repository has been added
+- name: Verify Kubernetes apt repository has been added
+  ansible.builtin.command: cat /etc/apt/sources.list.d/kubernetes.list
+  register: repo_output
+  become: yes
+
+# Step 7: Refresh the apt repository to ensure the new sources are available
+- name: Refresh the apt repository
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+
+# Step 8: Check if the kubelet package is available in the repository
+- name: Check if kubelet is available in the repository
+  ansible.builtin.command: apt-cache policy kubelet
+  register: kubelet_check
+  become: yes
+
+# Step 9: Install the Kubernetes packages (kubelet, kubeadm, kubectl)
+- name: Install Kubernetes packages
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    update_cache: yes
+  register: install_result
+  become: yes

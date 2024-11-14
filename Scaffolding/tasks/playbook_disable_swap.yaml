@@ -1,0 +1,24 @@
+---
+# Step 1: Disable swap immediately
+- name: "Disable swap immediately"
+  ansible.builtin.command: swapoff -a
+  become: yes
+
+# Step 2: Ensure swap is disabled on boot
+- name: "Ensure swap is disabled on boot"
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '^\s*swap\s'
+    state: absent
+  become: yes
+
+# Step 3: Verify swap is disabled
+- name: "Verify swap is disabled"
+  ansible.builtin.command: free -h
+  register: swap_status
+  become: yes
+
+# Step 4: Log the output of the swap status check
+- name: "Log swap status"
+  ansible.builtin.debug:
+    msg: "{{ swap_status.stdout }}"

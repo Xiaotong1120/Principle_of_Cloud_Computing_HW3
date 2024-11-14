@@ -1,0 +1,6 @@
+---
+- name: Download Kafka archive locally
+  get_url:
+    url: https://archive.apache.org/dist/kafka/2.8.0/kafka_2.13-2.8.0.tgz
+    dest: /tmp/kafka.tgz
+    mode: '0644'

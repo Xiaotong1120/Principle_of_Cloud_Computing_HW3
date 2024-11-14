@@ -1,0 +1,13 @@
+---
+# Step 1: Add IPv4 forwarding rule to sysctl configuration using the copy module
+- name: "Add IPv4 forwarding rule"
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+      net.ipv4.ip_forward = 1
+  become: yes
+
+# Step 2: Apply sysctl changes to enable IPv4 forwarding
+- name: "Apply sysctl changes"
+  ansible.builtin.command: sysctl --system
+  become: yes

@@ -1,0 +1,62 @@
+---
+# tasks/playbook_check_variables.yaml
+
+- name: "Check if local_user is defined"
+  assert:
+    that:
+      - local_user is defined
+    fail_msg: "local_user is not defined in variables.yaml"
+
+- name: "Check if cloud_user is defined"
+  assert:
+    that:
+      - cloud_user is defined
+    fail_msg: "cloud_user is not defined in variables.yaml"
+
+- name: "Check if cloud is defined"
+  assert:
+    that:
+      - cloud is defined
+    fail_msg: "cloud is not defined in variables.yaml"
+
+- name: "Check if key_name is defined"
+  assert:
+    that:
+      - key_name is defined
+    fail_msg: "key_name is not defined in variables.yaml"
+
+- name: "Check if ssh_key_path is defined"
+  assert:
+    that:
+      - ssh_key_path is defined
+    fail_msg: "ssh_key_path is not defined in variables.yaml"
+
+- name: "Check if image_name is defined"
+  assert:
+    that:
+      - image_name is defined
+    fail_msg: "image_name is not defined in variables.yaml"
+
+- name: "Check if vm_flavor is defined"
+  assert:
+    that:
+      - vm_flavor is defined
+    fail_msg: "vm_flavor is not defined in variables.yaml"
+
+- name: "Check if network is defined"
+  assert:
+    that:
+      - network is defined
+    fail_msg: "network is not defined in variables.yaml"
+
+- name: "Check if security_groups is defined"
+  assert:
+    that:
+      - security_groups is defined
+    fail_msg: "security_groups is not defined in variables.yaml"
+
+- name: "Check if server_names is defined"
+  assert:
+    that:
+      - server_names is defined
+    fail_msg: "server_names is not defined in variables.yaml"

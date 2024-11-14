@@ -1,0 +1,27 @@
+---
+- name: "Install apt packages for cloud VMs"
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-pip
+      - curl
+      - git
+      - unzip
+      - build-essential
+      - default-jre
+      - ufw
+      - net-tools
+      - openssh-client
+      - openssh-server
+      - firewalld
+      - nano
+      - wget
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - gpg
+      - jq
+    state: present
+    update_cache: yes
+  become: yes
+  become_user: root

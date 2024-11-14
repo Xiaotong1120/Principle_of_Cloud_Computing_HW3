@@ -1,0 +1,32 @@
+---
+# Playbook to run the private Docker registry on VM1
+
+- name: Ensure Docker is installed
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+  become: yes
+
+- name: Ensure Docker service is started and enabled at boot
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Pull Docker registry image from Docker Hub
+  ansible.builtin.docker_image:
+    name: registry
+    tag: "2"
+    source: pull
+  become: yes
+
+- name: Run Docker private registry container
+  ansible.builtin.docker_container:
+    name: MyRegistry
+    image: registry:2
+    state: started
+    ports:
+      - "5000:5000"
+    restart_policy: always
+  become: yes

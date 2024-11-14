@@ -1,0 +1,165 @@
+---
+# Install and configure firewalld, and set the necessary ports for Kafka and Zookeeper
+
+- name: Install firewalld
+  apt:
+    name: firewalld
+    state: present
+    update_cache: yes
+
+- name: Start and enable firewalld service
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+# SSH
+- name: Allow SSH (port 22)
+  firewalld:
+    port: 22/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# Kubernetes Ports
+- name: Allow Kubernetes secure communication (port 443)
+  firewalld:
+    port: 443/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes etcd communication (ports 2379-2381)
+  firewalld:
+    port: 2379-2381/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes API server (port 6443)
+  firewalld:
+    port: 6443/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes kubelet (port 10250)
+  firewalld:
+    port: 10250/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes kube proxy (port 10256)
+  firewalld:
+    port: 10256/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes controller (port 10257)
+  firewalld:
+    port: 10257/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes scheduler (port 10259)
+  firewalld:
+    port: 10259/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kubernetes RBAC (port 8080)
+  firewalld:
+    port: 8080/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# Flannel Ports (UDP)
+- name: Allow Flannel VXLAN (port 8285)
+  firewalld:
+    port: 8285/udp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Flannel (port 8472)
+  firewalld:
+    port: 8472/udp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# Docker Private Registry
+- name: Allow Docker private registry (port 5000)
+  firewalld:
+    port: 5000/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# Application Ports
+- name: Allow application ports (30000-30100)
+  firewalld:
+    port: 30000-30100/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# Kafka Ports
+- name: Allow Kafka default port (9092)
+  firewalld:
+    port: 9092/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kafka Broker Controller (port 9093)
+  firewalld:
+    port: 9093/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kafka Internal Communication (port 9094)
+  firewalld:
+    port: 9094/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow Kafka SSL Communication (port 9095)
+  firewalld:
+    port: 9095/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# Zookeeper Ports
+- name: Allow Zookeeper port (2181)
+  firewalld:
+    port: 2181/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+# HTTP/HTTPS Ports (if needed for web services)
+- name: Allow HTTP (port 80)
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Allow HTTPS (port 443)
+  firewalld:
+    port: 443/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Reload firewalld to apply changes
+  command: firewall-cmd --reload

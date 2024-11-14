@@ -98,7 +98,7 @@ The project was developed collaboratively, with team members taking on different
   - Developed playbooks for initializing Kubernetes clusters and installing Kafka, Zookeeper, Docker, and other services.
 
 - **Basic Kubernetes Setup and Testing**  
-  - **Arpit Ojha**  
+  - **Xiaotong 'Brandon' Ma, Arpit Ojha**  
   - Validated basic Kubernetes cluster functionality, ensuring Pods were deployable and services were running.
 
 - **Advanced Kubernetes Configuration and Troubleshooting**  

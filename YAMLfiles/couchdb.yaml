@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: couchdb-deployment
+spec:
+  selector:
+    matchLabels:
+      app: couchdb
+  template:
+    metadata:
+      labels:
+        app: couchdb
+    spec:
+      containers:
+      - name: couchdb
+        image: 192.168.5.177:5000/couchdb
+        ports:
+        - containerPort: 5984
+        imagePullPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: t13vm4
+  minReadySeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: couchdb-service
+spec:
+  type: NodePort
+  selector:
+    app: couchdb
+  ports:
+  - port: 5984
+    targetPort: 5984
+    nodePort: 30084

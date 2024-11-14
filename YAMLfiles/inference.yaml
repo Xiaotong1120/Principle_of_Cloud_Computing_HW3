@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inference
+  template:
+    metadata:
+      labels:
+        app: inference
+    spec:
+      hostNetwork: true
+      containers:
+      - name: inference
+        image: 192.168.5.177:5000/python
+        command: ["python3", "inference_script.py"]
+  minReadySeconds: 5

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper-deployment
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        image: 192.168.5.177:5000/zookeeper
+        imagePullPolicy: Always
+        command: ["/kafka_2.13-2.8.0/bin/zookeeper-server-start.sh"]
+        args: ["/kafka_2.13-2.8.0/config/zookeeper.properties"]
+        ports:
+        - containerPort: 2181
+      nodeSelector:
+        kubernetes.io/hostname: t13vm2  # Ensure this is where Zookeeper should run
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-service
+spec:
+  type: NodePort
+  ports:
+  - port: 2181
+    targetPort: 2181
+  selector:
+    app: zookeeper
